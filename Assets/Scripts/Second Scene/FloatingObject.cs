@@ -18,7 +18,9 @@ public class FloatingObject : MonoBehaviour
 
     public float waveHeight = 0f;
 
-    private Rigidbody rigidbody;
+    OceanManager oceanManager;
+
+    private Rigidbody rb;
 
     private int floatersUnderwater;
 
@@ -27,7 +29,8 @@ public class FloatingObject : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        rigidbody = GetComponent<Rigidbody>();
+        rb = GetComponent<Rigidbody>();
+        oceanManager = FindObjectOfType<OceanManager>();
     }
 
     // Update is called once per frame
@@ -37,11 +40,11 @@ public class FloatingObject : MonoBehaviour
 
         for (int i = 0; i < floaters.Length; i++)
         {
-            float underwaterDifference = floaters[i].position.y - waveHeight;
+            float underwaterDifference = floaters[i].position.y - oceanManager.GetWaveHeightAtPos(floaters[i].position);
 
             if (underwaterDifference < 0)
             {
-                rigidbody.AddForceAtPosition(Vector3.up * floatingPower * Mathf.Abs(underwaterDifference), floaters[i].position, ForceMode.Force);
+                rb.AddForceAtPosition(Vector3.up * floatingPower * Mathf.Abs(underwaterDifference), floaters[i].position, ForceMode.Force);
 
                 floatersUnderwater++;
 
@@ -65,13 +68,13 @@ public class FloatingObject : MonoBehaviour
     {
         if (isUnderwater)
         {
-            rigidbody.drag = underWaterDrag;
-            rigidbody.angularDrag = underWaterAngularDrag;
+            rb.drag = underWaterDrag;
+            rb.angularDrag = underWaterAngularDrag;
         }
         else
         {
-            rigidbody.drag = airDrag;
-            rigidbody.angularDrag= airAngularDrag;
+            rb.drag = airDrag;
+            rb.angularDrag= airAngularDrag;
         }
     }
 }
